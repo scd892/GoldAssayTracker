@@ -1,0 +1,25 @@
+pandas.errors.DatabaseError: Execution failed on sql ' WITH eval_stats AS ( SELECT e.trainee_id, COUNT(e.evaluation_id) as total_samples, AVG(e.deviation_ppt) as avg_deviation, CASE WHEN COUNT(e.evaluation_id) > 1 THEN SQRT(SUM((e.deviation_ppt - AVG(e.deviation_ppt)) * (e.deviation_ppt - AVG(e.deviation_ppt))) / (COUNT(e.evaluation_id) - 1)) ELSE 0 END as std_deviation, SUM(e.is_within_tolerance) as within_tolerance_count, 100.0 * SUM(e.is_within_tolerance) / COUNT(e.evaluation_id) as accuracy_percentage, MIN(e.test_date) as first_evaluation, MAX(e.test_date) as last_evaluation FROM trainee_evaluations e GROUP BY e.trainee_id ) SELECT t.trainee_id, t.assayer_id, a.name as assayer_name, a.employee_id, t.start_date, t.certification_date, t.status as certification_status, t.target_tolerance, t.min_samples_required, t.min_accuracy_percentage, COALESCE(s.total_samples, 0) as total_samples_evaluated, COALESCE(s.avg_deviation, 0) as average_deviation, COALESCE(s.std_deviation, 0) as standard_deviation, COALESCE(s.accuracy_percentage, 0) as percent_within_tolerance, s.first_evaluation, s.last_evaluation, t.notes FROM trainees t JOIN assayers a ON t.assayer_id = a.assayer_id LEFT JOIN eval_stats s ON t.trainee_id = s.trainee_id WHERE t.is_active = 1 ORDER BY t.status, a.name ': misuse of aggregate function AVG()
+Traceback:
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/exec_code.py", line 121, in exec_func_with_error_handling
+    result = func()
+             ^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 639, in code_to_exec
+    _mpa_v1(self._main_script_path)
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 159, in _mpa_v1
+    page.run()
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/streamlit/navigation/page.py", line 297, in run
+    exec(code, module.__dict__)
+File "/home/runner/workspace/pages/11_Trainee_Evaluation.py", line 121, in <module>
+    trainee_summary = get_trainee_summary()
+                      ^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/database_trainee.py", line 485, in get_trainee_summary
+    summary_df = pd.read_sql(query, conn)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/pandas/io/sql.py", line 706, in read_sql
+    return pandas_sql.read_query(
+           ^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/pandas/io/sql.py", line 2738, in read_query
+    cursor = self.execute(sql, params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/pandas/io/sql.py", line 2686, in execute
+    raise ex from exc

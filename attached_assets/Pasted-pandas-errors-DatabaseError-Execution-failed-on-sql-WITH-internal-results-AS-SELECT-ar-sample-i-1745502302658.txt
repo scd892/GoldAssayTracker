@@ -1,0 +1,25 @@
+pandas.errors.DatabaseError: Execution failed on sql ' WITH internal_results AS ( SELECT ar.sample_id as internal_sample_id, ar.gold_content as internal_gold_content, a.name as assayer_name, ar.test_date as internal_test_date FROM assay_results ar JOIN assayers a ON ar.assayer_id = a.assayer_id WHERE date(ar.test_date) >= date('now', '-? days') ), external_results AS ( SELECT ir.sample_id as external_sample_id, ir.gold_content as external_gold_content, el.lab_name, ir.test_date as external_test_date, ir.method_used, ir.uncertainty FROM interlab_results ir JOIN external_labs el ON ir.lab_id = el.lab_id WHERE date(ir.test_date) >= date('now', '-? days') ) SELECT ic.comparison_id, ic.internal_sample_id, ic.external_sample_id, COALESCE(ic.reference_value, ir.internal_gold_content) as reference_value, ir.internal_gold_content, er.external_gold_content, ir.assayer_name, er.lab_name, ir.internal_test_date, er.external_test_date, er.method_used, er.uncertainty, (er.external_gold_content - ir.internal_gold_content) as absolute_deviation, ((er.external_gold_content - ir.internal_gold_content) / ir.internal_gold_content * 100) as percentage_deviation, ic.comparison_date, ic.notes FROM interlab_comparisons ic JOIN internal_results ir ON ic.internal_sample_id = ir.internal_sample_id JOIN external_results er ON ic.external_sample_id = er.external_sample_id WHERE date(ic.comparison_date) >= date('now', '-? days') ORDER BY ic.comparison_date DESC ': Incorrect number of bindings supplied. The current statement uses 0, and there are 3 supplied.
+Traceback:
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/exec_code.py", line 121, in exec_func_with_error_handling
+    result = func()
+             ^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 639, in code_to_exec
+    _mpa_v1(self._main_script_path)
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 159, in _mpa_v1
+    page.run()
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/streamlit/navigation/page.py", line 297, in run
+    exec(code, module.__dict__)
+File "/home/runner/workspace/pages/08_Interlab_Comparisons.py", line 96, in <module>
+    comparison_df = get_interlab_comparisons(days=days)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/database_interlab.py", line 286, in get_interlab_comparisons
+    comparisons_df = pd.read_sql(query, conn, params=[days, days, days])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/pandas/io/sql.py", line 706, in read_sql
+    return pandas_sql.read_query(
+           ^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/pandas/io/sql.py", line 2738, in read_query
+    cursor = self.execute(sql, params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/pandas/io/sql.py", line 2686, in execute
+    raise ex from exc

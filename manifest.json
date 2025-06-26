@@ -1,0 +1,22 @@
+
+{
+  "name": "AEG labsync Monitor",
+  "short_name": "AEG labsync",
+  "description": "Gold Assay Laboratory Monitoring System",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#D4AF37",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./attached_assets/lab-system-logo-png_seeklogo-511943_1750441877909.ico",
+      "sizes": "16x16 32x32 48x48",
+      "type": "image/x-icon",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity", "utilities"],
+  "lang": "en",
+  "scope": "/"
+}
